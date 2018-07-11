@@ -9,12 +9,42 @@
     var files = folder.getFiles();
     while (files.hasNext()){
       file = files.next();
-      var row = []
+      var row = [];
       row.push(file.getName(),file.getId(),file.getSize(),file.getLastUpdated(),"New");
       list.push(row);
     }
     var lastRow = sh.getLastRow();
     sh.getRange(lastRow + 1,1,list.length,list[0].length).setValues(list);
+  }
+
+  function archiveDocs(){
+    var fbDoc = DocumentApp.getActiveDocument();
+    var fbUrl = fbDoc.getUrl();
+
+    var fbBody = fbDoc.getBody();
+    var infoTable = fbBody.getTables()[0];
+    var evidenceUrl = infoTable.getRow(1).getCell(1).getText();
+    var archiveUrl = infoTable.getRow(2).getCell(1).getText();
+    var recordUrl = infoTable.getRow(3).getCell(1).getText();
+
+    var criteriaTable = fbBody.getTables()[3];
+
+    var studentRecord = SpreadsheetApp.openByUrl(recordUrl);
+    var evidenceSheet = studentRecord.setActiveSheet("Evidence");
+        
+    var numRows = criteriaTable.getNumRows();   
+        
+    for(j = 2; j < numRows; j++){
+      var criterionRow = criteriaTable.getRow(j);
+      var numCells = criterionRow.getNumCells();
+      var rowArray = [];
+      for(i = 0; i < numCells; i++){
+        rowArray.push(criterionRow.getCell(i).getText());
+      }
+      evidenceSheet.appendRow(rowArray);
+    }
+
+
   }
   
   function getSubmission(){
